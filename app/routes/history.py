@@ -8,7 +8,8 @@ router = APIRouter()
 async def create_history(history: History):
     """API endpoint to create a history item."""
     try:
-        response = create_history_item(history)
+        history_data = history.dict(exclude_unset=True)
+        response = create_history_item(history_data)
         return {"message": "History item created successfully", "response": response}
     except RuntimeError as e:
         raise HTTPException(

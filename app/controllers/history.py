@@ -2,11 +2,21 @@ from app.database.dynamodb import dynamodb
 from botocore.exceptions import ClientError
 from app.models.history import History
 
+def generate_validation_result(incident_report: str, process_note: str) -> str:
+    return "Generated validation result based on the given incident report and process note."
+
 def create_history_item(history: History):
+    
+    validation_result = generate_validation_result(
+        incident_report=history['incident_report'],
+        process_note=history.get('process_note')
+    )
+    history['validation_result'] = validation_result
+    
     """Create a history item in DynamoDB."""
+
     table = dynamodb.Table('ValidationHistory')
     try:
-        # Convert History model to dictionary for DynamoDB
         response = table.put_item(Item=history.dict())
         return response
     except ClientError as e:
