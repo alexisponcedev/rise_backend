@@ -8,7 +8,7 @@ class History(BaseModel):
     validation_result: Optional[str] = Field(None, description="The result of the autism validation", exclude=True)
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": "1",
                 "incident_report": "Sample Incident Report",

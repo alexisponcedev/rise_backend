@@ -19,7 +19,7 @@ dynamodb = boto3.resource(
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
 
-def create_table():
+def create_validation_table():
     """Create the DynamoDB table if it does not exist."""
     try:
         table = dynamodb.create_table(
@@ -27,13 +27,13 @@ def create_table():
             KeySchema=[
                 {
                     'AttributeName': 'id',
-                    'KeyType': 'HASH'  # Partition key
+                    'KeyType': 'HASH' 
                 }
             ],
             AttributeDefinitions=[
                 {
                     'AttributeName': 'id',
-                    'AttributeType': 'S'  # String
+                    'AttributeType': 'S' 
                 }
             ],
             ProvisionedThroughput={
@@ -42,14 +42,45 @@ def create_table():
             }
         )
         table.meta.client.get_waiter('table_exists').wait(TableName='ValidationHistory')
-        logger.info("Table created successfully.")
+        logger.info("ValidationTable created successfully.")
     except dynamodb.meta.client.exceptions.ResourceInUseException:
-        logger.warning("Table already exists.")
+        logger.warning("ValidationTable already exists.")
     except ClientError as e:
-        logger.error(f"Error creating table: {e.response['Error']['Message']}")
-        raise  # Re-raise the exception after logging
+        logger.error(f"Error creating ValidationTable: {e.response['Error']['Message']}")
+        raise
+
+def create_user_table():
+    """Create the DynamoDB table if it does not exist."""
+    try:
+        table = dynamodb.create_table(
+            TableName='User',
+            KeySchema=[
+                {
+                    'AttributeName': 'id',
+                    'KeyType': 'HASH' 
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'id',
+                    'AttributeType': 'S' 
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+        )
+        table.meta.client.get_waiter('table_exists').wait(TableName='User')
+        logger.info("UserTable created successfully.")
+    except dynamodb.meta.client.exceptions.ResourceInUseException:
+        logger.warning("UserTable already exists.")
+    except ClientError as e:
+        logger.error(f"Error creating UserTable: {e.response['Error']['Message']}")
+        raise 
 
 def initialize_db():
     """Initialize the database by creating necessary tables."""
     logger.info("Initializing database...")
-    create_table()
+    create_validation_table()
+    create_user_table()
