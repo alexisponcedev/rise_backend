@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-
+from user import User
 class AutismData(BaseModel):
     id: str = Field(..., description="The unique identifier for the autism data entry")
-    user_id: str = Field(..., description="The unique identifier for the user associated with this autism data")
+    user_id: User = Field(..., description="The unique identifier for the user associated with this autism data")
     communication_methods_aac: Optional[str] = Field(None, description="AAC communication methods used by the user")
     communication_methods_frequency: Optional[str] = Field(None, description="Frequency of communication methods")
     social_interactions_engagement: Optional[str] = Field(None, description="User's engagement in social interactions")

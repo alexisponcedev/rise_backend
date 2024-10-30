@@ -1,34 +1,64 @@
 from fastapi import APIRouter, HTTPException, status
-from app.models.history import History
-from app.controllers.history import create_history_item, get_history_item
+from app.models.user import User
+from app.controllers.user import create_user, get_user, update_user, delete_user
+from typing import Any
 
 router = APIRouter()
 
-@router.post("/user/", status_code=status.HTTP_201_CREATED)
-async def create_history(history: History):
-    """API endpoint to create a history item."""
+@router.post("/users/", status_code=status.HTTP_201_CREATED)
+async def create_user_data(user: User) -> dict[str, Any]:
+    """API endpoint to create a user."""
     try:
-        history_data = history.dict(exclude_unset=True)
-        response = create_history_item(history_data)
-        return {"message": "History item created successfully", "response": response}
-    except RuntimeError as e:
+        user_data = user.dict(exclude_unset=True)
+        response = create_user(User(**user_data))
+        return {"message": "User created successfully", "response": response}
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
 
-@router.get("/validation/{history_id}", status_code=status.HTTP_200_OK)
-async def read_item(history_id: str):
-    """API endpoint to retrieve a history item by ID."""
+@router.get("/users/{user_id}", status_code=status.HTTP_200_OK)
+async def read_user_data(user_id: str):
+    """API endpoint to retrieve a user by ID."""
     try:
-        item = get_history_item(history_id)
-        if item is None:
+        user = get_user(user_id)
+        if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"History item with ID {history_id} not found"
+                detail=f"User with ID {user_id} not found"
             )
-        return item
-    except RuntimeError as e:
+        return user
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+@router.put("/users/{user_id}", status_code=status.HTTP_200_OK)
+async def update_user_data(user_id: str, user: User):
+    """API endpoint to update a user by ID."""
+    try:
+        user_data = user.dict(exclude_unset=True)
+        updated_user = update_user(user_id, user_data)
+        return {"message": "User updated successfully", "response": updated_user}
+    except HTTPException as e:
+        raise e 
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user_data(user_id: str):
+    """API endpoint to delete a user by ID."""
+    try:
+        delete_user(user_id)
+        return {"message": "User deleted successfully"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
