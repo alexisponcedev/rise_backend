@@ -27,13 +27,13 @@ def create_table():
             KeySchema=[
                 {
                     'AttributeName': 'id',
-                    'KeyType': 'HASH'  # Partition key
+                    'KeyType': 'HASH' 
                 }
             ],
             AttributeDefinitions=[
                 {
                     'AttributeName': 'id',
-                    'AttributeType': 'S'  # String
+                    'AttributeType': 'S' 
                 }
             ],
             ProvisionedThroughput={
@@ -47,7 +47,7 @@ def create_table():
         logger.warning("Table already exists.")
     except ClientError as e:
         logger.error(f"Error creating table: {e.response['Error']['Message']}")
-        raise  # Re-raise the exception after logging
+        raise 
 
 def initialize_db():
     """Initialize the database by creating necessary tables."""
